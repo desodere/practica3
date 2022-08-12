@@ -9,7 +9,8 @@ using namespace std;
 
 bool compare(char* a, char* b);
 
-char* metodo1(char *a,char *b, int s,int t);
+char* codimetodo1(char *a,char *b, int s,int t);
+char* decometodo1(char *a,char *b, int s,int t);
 
 int main()
 {
@@ -24,6 +25,7 @@ int main()
 
     cout<<"Ingrese nombre del archivo: ";
     cin>>nombre;
+    //nombre = "datos.txt";
 
     cout<<"Ingrese semilla: ";
     cin>>semilla;
@@ -31,18 +33,14 @@ int main()
 //    cout<<"Ingrese metodo de compilacion: ";
 //    cin>>metodo_compilacion;
 
-    //cin.getline(cadena1, sizeof(cadena1));      //lee una cadena con espacios
 
     try{
 
-        //ifstream fichero(nombre.c_str(), ifstream::binary);
 
         fin.open(nombre);        //abre el archivo para lectura
         if(!fin.is_open()){
             throw '2';
         }
-
-
 
         fin.getline(cadena3,15);           //lee una linea y la almacena en cadena3
         cout <<cadena3<<endl;
@@ -57,13 +55,12 @@ int main()
             }
             i++;
         }
-//        cout<<cadena2<<endl;
-//        cout<<strlen(cadena2)<<endl;
 
         nlen_cadena = strlen (cadena2);
 
         char aux[strlen(cadena2)*8];
         int size_binario = 0;
+        cout << " Texto del archivo en binario " << endl ;
         for (int j = 0; j < nlen_cadena; ++j) {
             bitset<8> bs4(cadena2[j]);      //creo una variable y convierto los caracteres a binario
             //cout << bs4 << " ";
@@ -74,7 +71,7 @@ int main()
             for (int var = 0; var < nta; ++var) {
 
                 cout  << bs4[nta-(var+1)] ;
-                //if(j==0){
+
                 a = bs4[nta-(var+1)];
                 if(a == 0 ){
 
@@ -94,20 +91,32 @@ int main()
                 cout << endl;
         }
         cout << endl;
+        cout << endl;
 
         //cout <<" aux\t" << aux << endl;
 
         char binario[size_binario];
-
-        metodo1(aux,binario,semilla,size_binario);
+        cout <<"codificadar..." << endl;
+        codimetodo1(aux,binario,semilla,size_binario);
         cout << binario << endl;
+
         fin.close();                //Cierra el archivo de lectura.
+
+
+
+
+
+        cout << endl;
+        cout <<"Decodificado..." << endl;
+        char binario2[size_binario];
+        decometodo1(binario,binario2,semilla,size_binario);
+        cout << binario2 << endl;
 
 
         string contenido;
         //contenido = "Hola";
-        contenido = binario;
-        ofstream fstemp("datos3.bat");
+        contenido = binario2;
+        ofstream fstemp("datos3.txt");
         if(!fstemp) //no se pudo abrir alguno de los 2
           {
             cout << "Error al abrir el archivo!" << endl;
@@ -117,8 +126,10 @@ int main()
         //modificar linea a linea
         fstemp << contenido << endl;
         fstemp.close();
+        cout << endl;
+        cout << endl;
         cout << "El archivo ha sido modificado correctamente" << endl;
-        system("pause");
+
 
     }
     catch (char c){
@@ -134,11 +145,12 @@ int main()
         cout<<"Error no definido\n";
     }
 
-    if(compare(cadena1, cadena2) && compare(cadena1, cadena3))
-        cout<<"Funciona!!!!\n";
-    else
+    if(compare(cadena1, cadena2) && compare(cadena1, cadena3)){
+        //cout<<"Funciona!!!!\n";
+        cout<<endl;
+    }else{
         cout<<"Error en la lectura de los datos!!!!\n";
-
+    }
 
     return 0;
 }
@@ -154,7 +166,7 @@ bool compare(char* a, char* b){
     return out;
 }
 
-char* metodo1(char *a,char *b, int s,int t){
+char* codimetodo1(char *a,char *b, int s,int t){
     int n = 0 ;
     int n1 = t/s;
     if (t%s!=0)
@@ -243,4 +255,92 @@ char* metodo1(char *a,char *b, int s,int t){
     return 0;
 }
 
+char* decometodo1(char *a,char *b, int s,int t){
+    int n = 0 ;
+    int n1 = t/s;
+    if (t%s!=0)
+        n1++;
+    int cantidad_1 = 0,cantidad_0 = 0;
+    while (n1>0) {
+
+
+        if(n==0){
+            for (int i = 0; i < s; ++i) {
+                if(a[i]=='0'){
+                    cantidad_0++;
+                   b[i]='1' ;
+                }else{
+                    cantidad_1++;
+                    b[i]='0' ;
+                }
+            }
+
+        }else{
+            if(cantidad_0==cantidad_1){
+                cantidad_1 = 0,cantidad_0 = 0;
+                for (int i = 0; i < s; ++i) {
+                    if(a[n+i]=='0'){
+                       cantidad_0++;
+                       b[n+i]='1' ;
+                    }else{
+                        cantidad_1++;
+                        b[n+i]='0' ;
+                    }
+                }
+            }else if(cantidad_1>cantidad_0){
+                cantidad_1 = 0,cantidad_0 = 0;
+                for (int i = 0; i < s; ++i) {
+                    if((i+1) % 2 == 0 and i!=0){
+                        if(a[n+i]=='0'){
+                            cantidad_0++;
+                           b[n+i]='1' ;
+                        }else{
+                            cantidad_1++;
+                            b[n+i]='0' ;
+                        }
+                    }else{
+                        if(a[n+i]=='1'){
+                            cantidad_1++;
+                            b[n+i]='1';
+                        }else{
+                            cantidad_0++;
+                            b[n+i]='0';
+                        }
+
+                    }
+                }
+            }else if(cantidad_0>cantidad_1){
+                cantidad_1 = 0,cantidad_0 = 0;
+                for (int i = 0; i < s; ++i) {
+                    if((i+1) % 2 == 0 and i!=0){
+                        if(a[n+i]=='0'){
+                            cantidad_0++;
+                           b[n+i]='1' ;
+                        }else{
+                            cantidad_1++;
+                            b[n+i]='0' ;
+                        }
+                    }else{
+                        if(a[n+i]=='1'){
+                            cantidad_1++;
+                            b[n+i]='1' ;
+                        }else{
+                            cantidad_0++;
+                            b[n+i]='0' ;
+                        }
+
+                    }
+                }
+            }
+
+        }
+        n=n+s;
+        n1--;
+    }
+    if (t%s==0)
+        b[n]='\0' ;
+    else
+        b[n-1]='\0' ;
+    return 0;
+}
 
